@@ -1,0 +1,95 @@
+
+
+Create database if not exists biblioteca;
+
+use biblioteca;
+
+CREATE TABLE CategoriaLeitor (
+    id_cat_leitor INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(50) NOT NULL, 
+    max_dias_emprestimo INT NOT NULL
+);
+
+
+CREATE TABLE CategoriaObra (
+    id_cat_obra INT PRIMARY KEY AUTO_INCREMENT,
+    descricao VARCHAR(50) NOT NULL,
+    taxa_multa_diaria DECIMAL(10,2)
+);
+
+
+CREATE TABLE Leitor (
+    id_leitor INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(200),
+    cidade VARCHAR(50),
+    estado CHAR(2),
+    telefone VARCHAR(20),
+    email VARCHAR(100),
+   	 documento_id VARCHAR(20) UNIQUE NOT NULL,
+    data_nascimento DATE,
+    id_cat_leitor INT,
+  	  FOREIGN KEY (id_cat_leitor) REFERENCES CategoriaLeitor(id_cat_leitor)
+);
+
+CREATE TABLE Funcionario (
+    id_funcionario INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    endereco VARCHAR(200),
+    cidade VARCHAR(50),
+    estado CHAR(2),
+    telefone VARCHAR(20),
+    data_nascimento DATE
+);
+
+
+CREATE TABLE Obra (
+    id_obra INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(200) NOT NULL,
+    id_cat_obra INT,
+    autores TEXT,
+    palavras_chave TEXT,
+    data_publicacao DATE,
+    num_edicao INT,
+    editora VARCHAR(100),
+    num_paginas INT,
+   	 FOREIGN KEY (id_cat_obra) REFERENCES CategoriaObra(id_cat_obra)
+);
+
+
+CREATE TABLE CopiaObra (
+    id_copia INT PRIMARY KEY AUTO_INCREMENT,
+    id_obra INT,
+  	  FOREIGN KEY (id_obra) REFERENCES Obra(id_obra)
+);
+
+
+CREATE TABLE Reserva (
+    id_reserva INT PRIMARY KEY AUTO_INCREMENT,
+    id_leitor INT,
+    id_obra INT,
+    id_funcionario INT,
+    data_reserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_prevista_retirada DATE NOT NULL,
+    data_prevista_devolucao DATE NOT NULL,
+   	 FOREIGN KEY (id_leitor) REFERENCES Leitor(id_leitor),
+   	 	FOREIGN KEY (id_obra) REFERENCES Obra(id_obra),
+    	FOREIGN KEY (id_funcionario) REFERENCES Funcionario(id_funcionario)
+);	
+
+
+CREATE TABLE Emprestimo (
+    id_emprestimo INT PRIMARY KEY AUTO_INCREMENT,
+    id_copia INT,
+    id_leitor INT,
+    id_funcionario_saida INT,
+    data_emprestimo TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_prevista_devolucao DATE NOT NULL,
+    data_devolucao_real DATE DEFAULT NULL,
+   valor_multa_pago DECIMAL(10,2) DEFAULT 0.00,
+   
+   
+   FOREIGN KEY (id_copia) REFERENCES CopiaObra(id_copia),
+    FOREIGN KEY (id_leitor) REFERENCES Leitor(id_leitor),
+    FOREIGN KEY (id_funcionario_saida) REFERENCES Funcionario(id_funcionario)
+);
